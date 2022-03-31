@@ -40,28 +40,28 @@ public:
 template <typename T>
 class SyncedQueueMap
 {
-   private:
-       std::unordered_map<std::string, SyncedQueue<T>>
-           m_queue_map;
-       absl::Mutex m_queue_mutex;
+private:
+    std::unordered_map<std::string, SyncedQueue<T>>
+        m_queue_map;
+    absl::Mutex m_queue_mutex;
 
-   public:
-       void push(const std::string& stream_name, const T& output)
-       {
-           absl::WriterMutexLock lock(&m_queue_mutex);
-           m_queue_map.try_emplace(stream_name);
-           m_queue_map[stream_name].push(output);
-       }
+public:
+    void push(const std::string& stream_name, const T& output)
+    {
+        absl::WriterMutexLock lock(&m_queue_mutex);
+        m_queue_map.try_emplace(stream_name);
+        m_queue_map[stream_name].push(output);
+    }
 
-       std::optional<T> pop(const std::string& stream_name)
-       {
-           SyncedQueue<T>* queue_ptr;
-           {
-               absl::MutexLock lock(&m_queue_mutex);
-               m_queue_map.try_emplace(stream_name);
-               queue_ptr = &m_queue_map[stream_name];
-           }
-           return queue_ptr->pop();
-       }
+    std::optional<T> pop(const std::string& stream_name)
+    {
+        SyncedQueue<T>* queue_ptr;
+        {
+            absl::MutexLock lock(&m_queue_mutex);
+            m_queue_map.try_emplace(stream_name);
+            queue_ptr = &m_queue_map[stream_name];
+        }
+        return queue_ptr->pop();
+    }
 
 };
