@@ -38,6 +38,7 @@ public:
             m_mutex.Unlock();
             return result;
         }
+        m_mutex.Unlock();
         return std::nullopt;
     }
 
